@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+
+<head lang="en">
+    <title>Advanced Scene Switcher Settings</title>
+    <meta charset="utf-8" />
+    <script src="https://cdn.jsdelivr.net/gh/geekyeggo/sdpi-components@v3/dist/sdpi-components.js"></script>
+    <script src="setupOBSConnection.js"></script>
+</head>
+
+<body>
+    <!--
+        Learn more about property inspector components at https://sdpi-components.dev/docs/components
+    -->
+    <sdpi-item label="Behavior">
+        <sdpi-select setting="behavior" placeholder="Please choose a behavior">
+            <option value=10>Toggle</option>
+            <option value=20>Start</option>
+            <option value=30>Stop</option>
+        </sdpi-select>
+    </sdpi-item>
+    <sdpi-item label="Status">
+        <div class="sdpi-item">
+            <p class="message" id="status">
+                Checking OSB connection status ...
+            </p>
+        </div>
+    </sdpi-item>
+    <sdpi-item id="configure">
+        <sdpi-button onclick="setupOBSConnection()">
+            Configure OBS connection
+        </sdpi-button>
+    </sdpi-item>
+    <sdpi-item label="Ip" id="ip" style="display: none;">
+        <sdpi-textfield setting="ip" placeholder="localhost" global>
+    </sdpi-item>
+    </sdpi-textfield>
+    <sdpi-item label="Port" id="port" style="display: none;">
+        <sdpi-textfield setting="port" pattern="/^\d+$/i" placeholder="4455" global=true>
+    </sdpi-item>
+    </sdpi-textfield>
+    <sdpi-item label="Password" id="password" style="display: none;">
+        <sdpi-password setting="password" placeholder="password" global=true></sdpi-password>
+    </sdpi-item>
+    <sdpi-item id="apply" style="display: none;">
+        <sdpi-button onclick="applyOBSConnectionSettings()">
+            Apply
+        </sdpi-button>
+    </sdpi-item>
+</body>
+
+</html>

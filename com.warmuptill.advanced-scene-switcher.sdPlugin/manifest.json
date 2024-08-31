@@ -1,0 +1,63 @@
+{
+	"Name": "Advanced Scene Switcher",
+	"Version": "0.1.0.0",
+	"Author": "WarmUpTill",
+	"Actions": [
+		{
+			"Name": "Macro Condition",
+			"UUID": "com.warmuptill.advanced-scene-switcher.macro-condition",
+			"Icon": "imgs/actions/macro-condition/icon",
+			"Tooltip": "Forwards key press events to the Advanced Scene Switcher OBS plugin.",
+			"PropertyInspectorPath": "ui/macro-condition.html",
+			"Controllers": [
+				"Keypad"
+			],
+			"States": [
+				{
+					"Image": "imgs/actions/macro-condition/key",
+					"TitleAlignment": "middle"
+				}
+			]
+		},
+		{
+			"Name": "Status",
+			"UUID": "com.warmuptill.advanced-scene-switcher.status",
+			"Icon": "imgs/actions/status/icon",
+			"Tooltip": "Control the status of the Advanced Scene Switcher OBS plugin.",
+			"PropertyInspectorPath": "ui/status.html",
+			"Controllers": [
+				"Keypad"
+			],
+			"States": [
+				{
+					"Image": "imgs/actions/status/key",
+					"TitleAlignment": "middle"
+				}
+			]
+		}
+	],
+	"Category": "Advanced Scene Switcher",
+	"CategoryIcon": "imgs/plugin/category-icon",
+	"CodePath": "bin/plugin.js",
+	"Description": "Enables communication with the Advanced Scene Switcher plugin for OBS Studio",
+	"Icon": "imgs/plugin/marketplace",
+	"SDKVersion": 2,
+	"Software": {
+		"MinimumVersion": "6.5"
+	},
+	"OS": [
+		{
+			"Platform": "mac",
+			"MinimumVersion": "10.15"
+		},
+		{
+			"Platform": "windows",
+			"MinimumVersion": "10"
+		}
+	],
+	"Nodejs": {
+		"Version": "20",
+		"Debug": "enabled"
+	},
+	"UUID": "com.warmuptill.advanced-scene-switcher"
+}

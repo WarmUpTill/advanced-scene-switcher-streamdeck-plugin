@@ -1,0 +1,15 @@
+# Node.js
+node_modules/
+
+# Stream Deck files
+*.sdPlugin/bin
+*.sdPlugin/logs
+
+# Other
+.DS_Store
+.idea/**
+.vscode/**
+.history
+__exclude
+.editorconfig
+release/**
