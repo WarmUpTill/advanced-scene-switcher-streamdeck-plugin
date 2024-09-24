@@ -87,6 +87,13 @@ export class AdvssConnection {
             });
             logger.info(`Connected to OBS websocket server ${obsWebSocketVersion} (using RPC ${negotiatedRpcVersion})`)
             this.connected = true;
+
+            const isRunning = await this.isAdvancedSceneSwitcherRunning();
+            if (isRunning) {
+                this.handleStartEvent();
+            } else {
+                this.handleStopEvent();
+            }
         } catch (error) {
             if (error instanceof OBSWebSocketError) {
                 logger.error(`Failed to connect to OBS (${error.code}: ${error.message})`);
