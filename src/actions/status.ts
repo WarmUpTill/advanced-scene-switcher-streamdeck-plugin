@@ -41,12 +41,6 @@ export class StatusAction extends SingletonAction<StatusSettings> {
                 await advssConnection.setAdvancedSceneSwitcherStatus(!isRunning);
                 break;
         }
-        //const isRunning = await advssConnection.isAdvancedSceneSwitcherRunning();
-        //if (advssConnection.isConnected()) {
-        //    ev.action.setTitle(`${isRunning ? "Started" : "Stopped"}`);
-        //} else {
-        //    ev.action.setTitle("Not\nConnected")
-        //}
 
         // Update connection status just in case it changed
         ev.action.sendToPropertyInspector({ connected: advssConnection.isConnected() });
