@@ -12,11 +12,12 @@ export class StatusAction extends SingletonAction<StatusSettings> {
     async onWillAppear(ev: WillAppearEvent<StatusSettings>): Promise<void> {
         advssConnection.registerStartEventCallback(() => { ev.action.setTitle("Started"); });
         advssConnection.registerStopEventCallback(() => { ev.action.setTitle("Stopped"); });
+        advssConnection.registerDisconnectCallback(() => { ev.action.setTitle("Not\nConnected"); });
 
         await advssConnection.waitForInitialConnectionAttempt();
         const isRunning = await advssConnection.isAdvancedSceneSwitcherRunning();
         if (!advssConnection.isConnected()) {
-            ev.action.setTitle("Not\nconnected");
+            ev.action.setTitle("Not\nConnected");
             return;
         }
         return ev.action.setTitle(`${isRunning ? "Started" : "Stopped"}`);

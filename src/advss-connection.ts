@@ -1,7 +1,7 @@
 import { OBSWebSocket, OBSWebSocketError, EventSubscription, OBSResponseTypes } from 'obs-websocket-js';
 import streamDeck, { LogLevel } from "@elgato/streamdeck";
 
-declare type StartStopEventCallback = () => void;
+declare type EventCallback = () => void;
 
 const logger = streamDeck.logger.createScope("AdvssConnection");
 
@@ -28,12 +28,14 @@ export class AdvssConnection {
     private initialConnectionAttemptDone: boolean = false;
     private startCallbacks: { (): void; }[] = [];
     private stopCallbacks: { (): void; }[] = [];
+    private disconnectCallbacks: { (): void; }[] = [];
 
     private constructor(host: string = "localhost", port: number = 4455, password: string = "password") {
         this.port = port;
         this.host = host;
         this.password = password;
         this.obs.on("VendorEvent", (data) => this.parseEvents(data));
+        this.obs.on("ConnectionClosed", (data) => this.handleConnectionClose(data));
     }
 
     private parseEvents(data: any) {
@@ -47,6 +49,13 @@ export class AdvssConnection {
         }
     }
 
+    private async handleConnectionClose(error: OBSWebSocketError) {
+        logger.info(`OBS connection closed (${error.code}): ${error.message}`);
+        this.connected = false;
+        this.disconnectCallbacks.forEach((callback) => { callback(); });
+        this.tryDelayedReconnect(5000);
+    }
+
     private handleStartEvent() {
         logger.debug("Start event received");
         this.startCallbacks.forEach((callback) => { callback(); });
@@ -57,12 +66,16 @@ export class AdvssConnection {
         this.stopCallbacks.forEach((callback) => { callback(); });
     }
 
-    public registerStartEventCallback(callback: StartStopEventCallback) {
+    public registerStartEventCallback(callback: EventCallback) {
         this.startCallbacks.push(callback);
     }
 
-    public registerStopEventCallback(callback: StartStopEventCallback) {
+    public registerStopEventCallback(callback: EventCallback) {
         this.stopCallbacks.push(callback);
+    }
+
+    public registerDisconnectCallback(callback: EventCallback) {
+        this.disconnectCallbacks.push(callback);
     }
 
     public isConnected(): boolean {
@@ -176,6 +189,18 @@ export class AdvssConnection {
             version: this.version
         };
         this.sendVendorRequest({ vendorName, requestType, requestData });
+    }
+
+    private async tryDelayedReconnect(delayMs: number) {
+        logger.debug(`Attempting reconnection in ${delayMs} ms`);
+        await new Promise(r => setTimeout(r, delayMs));
+
+        if (this.connected) {
+            // Already connected - skip reconnect attempt
+            return;
+        }
+
+        this.reconnect();
     }
 
     public async reconnect(): Promise<void> {
