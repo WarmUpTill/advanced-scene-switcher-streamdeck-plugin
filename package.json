@@ -20,6 +20,6 @@
 	"dependencies": {
 		"@elgato/streamdeck": "^0.3.0",
 		"obs-websocket-js": "^5.0.6",
-		"ws": "^8.18.0"
+		"ws": "^8.21.0"
 	}
 }
