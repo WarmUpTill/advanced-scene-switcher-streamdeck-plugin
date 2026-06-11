@@ -166,7 +166,7 @@ export class AdvssConnection {
             return;
         }
 
-        this.sendVendorRequest({ vendorName, requestType, requestData });
+        await this.sendVendorRequest({ vendorName, requestType, requestData });
     }
 
     public async waitForInitialConnectionAttempt() {
@@ -204,7 +204,7 @@ export class AdvssConnection {
         const requestData = {
             version: this.version
         };
-        this.sendVendorRequest({ vendorName, requestType, requestData });
+        await this.sendVendorRequest({ vendorName, requestType, requestData });
     }
 
     private async tryDelayedReconnect(delayMs: number) {
