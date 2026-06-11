@@ -1,5 +1,5 @@
-import { OBSWebSocket, OBSWebSocketError, EventSubscription, OBSResponseTypes } from 'obs-websocket-js';
-import streamDeck, { LogLevel } from "@elgato/streamdeck";
+import { OBSWebSocket, OBSWebSocketError, EventSubscription } from 'obs-websocket-js';
+import streamDeck from "@elgato/streamdeck";
 
 declare type EventCallback = () => void;
 
@@ -25,6 +25,8 @@ export class AdvssConnection {
     private password: string;
     private obs: OBSWebSocket = new OBSWebSocket();
     private connected: boolean = false;
+    private reconnecting: boolean = false;
+    private retryScheduled: boolean = false;
     private initialConnectionAttemptDone: boolean = false;
     private startCallbacks: { (): void; }[] = [];
     private stopCallbacks: { (): void; }[] = [];
@@ -53,7 +55,9 @@ export class AdvssConnection {
         logger.info(`OBS connection closed (${error.code}): ${error.message}`);
         this.connected = false;
         this.disconnectCallbacks.forEach((callback) => { callback(); });
-        this.tryDelayedReconnect(5000);
+        if (!this.reconnecting) {
+            this.tryDelayedReconnect(5000);
+        }
     }
 
     private handleStartEvent() {
@@ -192,30 +196,50 @@ export class AdvssConnection {
     }
 
     private async tryDelayedReconnect(delayMs: number) {
+        if (this.retryScheduled) {
+            return;
+        }
+        this.retryScheduled = true;
         logger.debug(`Attempting reconnection in ${delayMs} ms`);
         await new Promise(r => setTimeout(r, delayMs));
+        this.retryScheduled = false;
 
         if (this.connected) {
-            // Already connected - skip reconnect attempt
             return;
         }
 
         this.reconnect();
     }
 
+    private reconnectPromise: Promise<void> | null = null;
+
     public async reconnect(): Promise<void> {
+        if (this.reconnectPromise) {
+            return this.reconnectPromise;
+        }
+        this.reconnectPromise = this.doReconnect().finally(() => {
+            this.reconnectPromise = null;
+        });
+        return this.reconnectPromise;
+    }
+
+    private async doReconnect(): Promise<void> {
         logger.info(`OBS websocket reconnecting`);
+        this.reconnecting = true;
         this.connected = false;
         this.initialConnectionAttemptDone = true;
-        await this.obs.disconnect();
         await this.connect();
+        this.reconnecting = false;
+        if (!this.connected) {
+            this.tryDelayedReconnect(5000);
+        }
     }
 
     public async connectTo(settings: OBSConnectionSettings): Promise<void> {
         this.host = settings.ip;
         this.port = settings.port;
         this.password = settings.password;
-        this.reconnect()
+        await this.reconnect();
     }
 }
 
