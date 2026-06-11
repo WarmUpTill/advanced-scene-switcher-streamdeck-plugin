@@ -38,7 +38,8 @@ export class StatusAction extends SingletonAction<StatusSettings> {
 
     async onKeyDown(ev: KeyDownEvent<StatusSettings>): Promise<void> {
         if (!advssConnection.isConnected()) {
-            ev.action.setTitle("Not\nconnected");
+            advssConnection.reconnect();
+            ev.action.setTitle("Not\nConnected");
             return;
         }
 
