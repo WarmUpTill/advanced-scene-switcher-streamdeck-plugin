@@ -1,4 +1,4 @@
-import streamDeck, { action, KeyDownEvent, SingletonAction, WillAppearEvent, PropertyInspectorDidAppearEvent, SendToPluginEvent, KeyUpEvent } from "@elgato/streamdeck";
+import streamDeck, { action, KeyDownEvent, SingletonAction, WillAppearEvent, SendToPluginEvent } from "@elgato/streamdeck";
 import { AdvssConnection, OBSConnectionSettings } from "./../advss-connection";
 
 const advssConnection = AdvssConnection.getInstance();
@@ -9,10 +9,17 @@ const logger = streamDeck.logger.createScope("Status");
  */
 @action({ UUID: "com.warmuptill.advanced-scene-switcher.status" })
 export class StatusAction extends SingletonAction<StatusSettings> {
+    private onStart = () => {};
+    private onStop = () => {};
+    private onDisconnect = () => {};
+
     async onWillAppear(ev: WillAppearEvent<StatusSettings>): Promise<void> {
-        advssConnection.registerStartEventCallback(() => { ev.action.setTitle("Started"); });
-        advssConnection.registerStopEventCallback(() => { ev.action.setTitle("Stopped"); });
-        advssConnection.registerDisconnectCallback(() => { ev.action.setTitle("Not\nConnected"); });
+        this.onStart = () => { ev.action.setTitle("Started"); };
+        this.onStop = () => { ev.action.setTitle("Stopped"); };
+        this.onDisconnect = () => { ev.action.setTitle("Not\nConnected"); };
+        advssConnection.registerStartEventCallback(this.onStart);
+        advssConnection.registerStopEventCallback(this.onStop);
+        advssConnection.registerDisconnectCallback(this.onDisconnect);
 
         await advssConnection.waitForInitialConnectionAttempt();
         const isRunning = await advssConnection.isAdvancedSceneSwitcherRunning();
@@ -21,6 +28,12 @@ export class StatusAction extends SingletonAction<StatusSettings> {
             return;
         }
         return ev.action.setTitle(`${isRunning ? "Started" : "Stopped"}`);
+    }
+
+    async onWillDisappear(): Promise<void> {
+        advssConnection.unregisterStartEventCallback(this.onStart);
+        advssConnection.unregisterStopEventCallback(this.onStop);
+        advssConnection.unregisterDisconnectCallback(this.onDisconnect);
     }
 
     async onKeyDown(ev: KeyDownEvent<StatusSettings>): Promise<void> {
