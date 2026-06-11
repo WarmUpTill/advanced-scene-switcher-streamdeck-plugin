@@ -74,12 +74,24 @@ export class AdvssConnection {
         this.startCallbacks.push(callback);
     }
 
+    public unregisterStartEventCallback(callback: EventCallback) {
+        this.startCallbacks = this.startCallbacks.filter(cb => cb !== callback);
+    }
+
     public registerStopEventCallback(callback: EventCallback) {
         this.stopCallbacks.push(callback);
     }
 
+    public unregisterStopEventCallback(callback: EventCallback) {
+        this.stopCallbacks = this.stopCallbacks.filter(cb => cb !== callback);
+    }
+
     public registerDisconnectCallback(callback: EventCallback) {
         this.disconnectCallbacks.push(callback);
+    }
+
+    public unregisterDisconnectCallback(callback: EventCallback) {
+        this.disconnectCallbacks = this.disconnectCallbacks.filter(cb => cb !== callback);
     }
 
     public isConnected(): boolean {
