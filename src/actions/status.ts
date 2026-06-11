@@ -65,8 +65,10 @@ export class StatusAction extends SingletonAction<StatusSettings> {
             return;
         }
 
+        if (!advssConnection.isConnected()) {
+            await advssConnection.reconnect();
+        }
         logger.debug(`Setting connection status in PI to ${advssConnection.isConnected()}`);
-        await advssConnection.reconnect();
         ev.action.sendToPropertyInspector({ connected: advssConnection.isConnected() });
     }
 }
