@@ -18,7 +18,12 @@ streamDeck.actions.registerAction(new StatusAction());
 // Handler for global plugin settings
 streamDeck.settings.onDidReceiveGlobalSettings<OBSConnectionSettings>(
     async function (ev: DidReceiveGlobalSettingsEvent<OBSConnectionSettings>): Promise<void> {
-        await advssConnection.connectTo(ev.settings);
+        if (ev.settings.ip) {
+            await advssConnection.connectTo(ev.settings);
+        } else {
+            streamDeck.logger.info("No OBS connection settings configured");
+            advssConnection.markInitialConnectionAttemptDone();
+        }
     }
 );
 streamDeck.settings.getGlobalSettings();

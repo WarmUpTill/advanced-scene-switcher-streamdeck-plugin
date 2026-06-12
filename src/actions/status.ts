@@ -1,5 +1,5 @@
 import streamDeck, { action, KeyDownEvent, SingletonAction, WillAppearEvent, SendToPluginEvent } from "@elgato/streamdeck";
-import { AdvssConnection, OBSConnectionSettings } from "./../advss-connection";
+import { AdvssConnection } from "./../advss-connection";
 
 const advssConnection = AdvssConnection.getInstance();
 const logger = streamDeck.logger.createScope("Status");
@@ -66,11 +66,11 @@ export class StatusAction extends SingletonAction<StatusSettings> {
             return;
         }
 
-        if (!advssConnection.isConnected()) {
+        if (!advssConnection.isConnected() && advssConnection.isSettingsConfigured()) {
             await advssConnection.reconnect();
         }
         logger.debug(`Setting connection status in PI to ${advssConnection.isConnected()}`);
-        ev.action.sendToPropertyInspector({ connected: advssConnection.isConnected() });
+        ev.action.sendToPropertyInspector({ connected: advssConnection.isConnected(), settingsConfigured: advssConnection.isSettingsConfigured() });
     }
 }
 

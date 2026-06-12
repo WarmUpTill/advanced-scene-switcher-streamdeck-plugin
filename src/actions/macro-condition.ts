@@ -34,9 +34,11 @@ export class MacroConditionAction extends SingletonAction<MacroConditionSettings
             return;
         }
 
+        if (!advssConnection.isConnected() && advssConnection.isSettingsConfigured()) {
+            await advssConnection.reconnect();
+        }
         logger.debug(`Setting connection status in PI to ${advssConnection.isConnected()}`);
-        await advssConnection.reconnect();
-        ev.action.sendToPropertyInspector({ connected: advssConnection.isConnected() });
+        ev.action.sendToPropertyInspector({ connected: advssConnection.isConnected(), settingsConfigured: advssConnection.isSettingsConfigured() });
     }
 }
 

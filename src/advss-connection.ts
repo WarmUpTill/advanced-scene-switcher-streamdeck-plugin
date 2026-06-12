@@ -28,6 +28,7 @@ export class AdvssConnection {
     private reconnecting: boolean = false;
     private retryScheduled: boolean = false;
     private initialConnectionAttemptDone: boolean = false;
+    private settingsConfigured: boolean = false;
     private startCallbacks: { (): void; }[] = [];
     private stopCallbacks: { (): void; }[] = [];
     private disconnectCallbacks: { (): void; }[] = [];
@@ -96,6 +97,10 @@ export class AdvssConnection {
 
     public isConnected(): boolean {
         return this.connected;
+    }
+
+    public isSettingsConfigured(): boolean {
+        return this.settingsConfigured;
     }
 
     public static getInstance(): AdvssConnection {
@@ -167,6 +172,10 @@ export class AdvssConnection {
         }
 
         await this.sendVendorRequest({ vendorName, requestType, requestData });
+    }
+
+    public markInitialConnectionAttemptDone() {
+        this.initialConnectionAttemptDone = true;
     }
 
     public async waitForInitialConnectionAttempt() {
@@ -251,6 +260,7 @@ export class AdvssConnection {
         this.host = settings.ip;
         this.port = settings.port;
         this.password = settings.password;
+        this.settingsConfigured = true;
         await this.reconnect();
     }
 }
