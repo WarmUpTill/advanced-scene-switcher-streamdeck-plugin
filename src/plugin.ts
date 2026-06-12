@@ -1,8 +1,11 @@
 import streamDeck, { LogLevel, DidReceiveGlobalSettingsEvent } from "@elgato/streamdeck";
+import { pluginVersion } from "virtual:plugin-version";
 
 import { MacroConditionAction as MacroConditionAction } from "./actions/macro-condition";
 import { StatusAction as StatusAction} from "./actions/status";
 import { AdvssConnection, OBSConnectionSettings } from "./advss-connection";
+
+streamDeck.logger.info(`Advanced Scene Switcher Stream Deck plugin v${pluginVersion}`);
 
 const advssConnection = AdvssConnection.getInstance();
 
