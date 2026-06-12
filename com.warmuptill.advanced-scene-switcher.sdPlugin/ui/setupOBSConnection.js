@@ -1,6 +1,13 @@
 function updateStatus(payload) {
-    document.getElementById("status").innerText =
-        payload.connected ? "Connected to OBS websocket server" : "Not connected to OBS websocket server";
+    let statusText;
+    if (!payload.settingsConfigured) {
+        statusText = "No OBS connection settings configured";
+    } else if (payload.connected) {
+        statusText = "Connected to OBS websocket server";
+    } else {
+        statusText = "Not connected to OBS websocket server";
+    }
+    document.getElementById("status").innerText = statusText;
 }
 
 function setupOBSConnection() {
