@@ -53,7 +53,11 @@ export class AdvssConnection {
     }
 
     private async handleConnectionClose(error: OBSWebSocketError) {
-        logger.info(`OBS connection closed (${error.code}): ${error.message}`);
+        if (this.reconnecting) {
+            logger.debug(`OBS connection closed (${error.code}): ${error.message}`);
+        } else {
+            logger.info(`OBS connection closed (${error.code}): ${error.message}`);
+        }
         this.connected = false;
         this.disconnectCallbacks.forEach((callback) => { callback(); });
         if (!this.reconnecting) {

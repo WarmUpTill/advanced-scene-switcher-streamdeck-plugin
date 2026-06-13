@@ -5,6 +5,7 @@ import { MacroConditionAction as MacroConditionAction } from "./actions/macro-co
 import { StatusAction as StatusAction} from "./actions/status";
 import { AdvssConnection, OBSConnectionSettings } from "./advss-connection";
 
+streamDeck.logger.setLevel(LogLevel.INFO);
 streamDeck.logger.info(`Advanced Scene Switcher Stream Deck plugin v${pluginVersion}`);
 
 const advssConnection = AdvssConnection.getInstance();
